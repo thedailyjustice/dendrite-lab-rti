@@ -1,0 +1,16 @@
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:#0b0f12;color:#e8eef2;line-height:1.45}
+header{position:sticky;top:0;background:#11181dee;border-bottom:1px solid #24313a;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;padding:10px 16px}
+.brand{font-weight:700;font-size:18px;color:#e8eef2;text-decoration:none}nav a{color:#9fb3c0;margin-left:12px;text-decoration:none;font-size:14px}nav a:hover{color:#fff}
+main{max-width:900px;margin:0 auto;padding:16px}h1{font-size:24px;margin:8px 0 12px}h2{font-size:18px;margin:20px 0 8px}
+.card{background:#141d23;border:1px solid #24313a;border-radius:12px;padding:14px;margin:10px 0}
+.btn{font-family:inherit;display:inline-block;background:#2bb673;color:#06110b;border:0;border-radius:10px;padding:10px 16px;font-weight:600;font-size:15px;cursor:pointer;text-decoration:none;margin:4px 4px 4px 0}
+.btn.alt{background:#24313a;color:#e8eef2}.btn:disabled{opacity:.5}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid #1d282f}.row:last-child{border:0}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;font-weight:600;white-space:nowrap}
+.t-not{background:#5a1f24;color:#ffb3b8}.t-shaky,.t-practicing{background:#5a4a1f;color:#ffe2a3}.t-strong,.t-mastered{background:#1f5a36;color:#a8f0c4}.t-review{background:#1f3d5a;color:#a8d4f0}.t-new{background:#24313a;color:#9fb3c0}
+.choice{font:inherit;display:block;width:100%;text-align:left;background:#1a252c;color:#e8eef2;border:1px solid #2c3b45;border-radius:10px;padding:12px;margin:8px 0;font-size:16px;cursor:pointer}
+.choice.ok{border-color:#2bb673;background:#123222}.choice.bad{border-color:#e05561;background:#3a1418}
+.why{background:#0f171c;border-left:3px solid #2bb673;padding:10px;margin-top:10px}.muted{color:#9fb3c0;font-size:14px}
+.bar{height:8px;background:#24313a;border-radius:99px;overflow:hidden;min-width:80px;flex:1;max-width:160px}.bar i{display:block;height:100%;background:#2bb673}
+input[type=text]{background:#0f171c;border:1px solid #2c3b45;color:#e8eef2;border-radius:8px;padding:8px;font-size:15px;width:100%}
+code{background:#0f171c;padding:2px 6px;border-radius:6px;font-size:13px;word-break:break-all}label{cursor:pointer}
