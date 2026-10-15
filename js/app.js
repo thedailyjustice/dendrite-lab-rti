@@ -14,10 +14,27 @@ function finishSession(entry){const d=today();if(S.lastPlayDate!==d){if(S.lastPl
  S.points+=entry.points;S.history=[Object.assign({at:Date.now()},entry)].concat(S.history).slice(0,40);save();}
 function clearLab(id){if(!S.labsCleared.includes(id)){S.labsCleared.push(id);S.points+=25;}save();}
 const mastered=()=>IDS.filter(id=>S.stats[id].status==='mastered').length;
-function dendrite(n){// grows a branch per mastered standard (max 24)
- const br=[];for(let i=0;i<24;i++){const a=-Math.PI/2+(i/24)*Math.PI*2,on=i<n,L=on?62:40,x=100+Math.cos(a)*L,y=100+Math.sin(a)*L,x2=100+Math.cos(a+.25)*(L+16),y2=100+Math.sin(a+.25)*(L+16);
-  br.push(`<path d="M100 100 L${x.toFixed(1)} ${y.toFixed(1)}${on?` L${x2.toFixed(1)} ${y2.toFixed(1)}`:''}" stroke="${on?'#6eb8b0':'#24313a'}" stroke-width="${on?2:1.2}" fill="none" stroke-linecap="round"/>`+(on?`<circle cx="${x2.toFixed(1)}" cy="${y2.toFixed(1)}" r="3" fill="#6eb8b0"/>`:''));}
- return `<svg viewBox="0 0 200 200" class="dendrite" aria-hidden="true"><defs><radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#6eb8b0" stop-opacity="${.15+n/24*.35}"/><stop offset="70%" stop-color="#6eb8b0" stop-opacity="0"/></radialGradient></defs><circle cx="100" cy="100" r="90" fill="url(#glow)"/>${br.join('')}<circle cx="100" cy="100" r="9" fill="#e7ecef"/></svg>`;}
+function dendrite(n){// neuron that grows clearer with each mastered standard (0-24); deterministic static SVG
+ n=Math.max(0,Math.min(24,n|0));const f=n/24,C=[100,96];let s=7;const rnd=()=>(s=(s*16807)%2147483647)/2147483647;
+ const P=(v)=>v.toFixed(1),seg=[];// build fixed tree: 6 primaries -> 2 -> 2 -> 2 (depth 0..3)
+ const prim=[200,150,105,250,290,330].map(d=>d*Math.PI/180);
+ function grow(x,y,a,len,w,d,id){const ex=x+Math.cos(a)*len,ey=y+Math.sin(a)*len,mx=x+Math.cos(a+(rnd()-.5)*.5)*len*.55,my=y+Math.sin(a+(rnd()-.5)*.5)*len*.55;
+  seg.push({d,id,x,y,mx,my,ex,ey,w});if(d<3){const sp=.42+rnd()*.2;grow(ex,ey,a-sp,len*.68,w*.68,d+1,id+'a');grow(ex,ey,a+sp,len*.68,w*.68,d+1,id+'b');}}
+ prim.forEach((a,i)=>{const r=20;grow(C[0]+Math.cos(a)*r,C[1]+Math.sin(a)*r,a,26+rnd()*6,3.6,0,'p'+i)});
+ // unlock order: all primaries (stubs at n=0), then depth1, depth2, depth3, spread over 24 steps
+ const later=seg.filter(q=>q.d>0).sort((a,b)=>a.d-b.d||a.id.localeCompare(b.id));const show=Math.round(later.length*f);
+ const vis=new Set(later.slice(0,show));const op=.32+.68*f,col=`rgba(110,184,176,${op.toFixed(2)})`;
+ let out='';seg.forEach(q=>{if(q.d===0){const k=.45+.55*Math.min(1,f*3),ex=q.x+(q.ex-q.x)*k,ey=q.y+(q.ey-q.y)*k,mx=q.x+(q.mx-q.x)*k,my=q.y+(q.my-q.y)*k;
+   out+=`<path d="M${P(q.x)} ${P(q.y)} Q${P(mx)} ${P(my)} ${P(ex)} ${P(ey)}" stroke="${col}" stroke-width="${P(q.w)}" fill="none" stroke-linecap="round"/>`;}
+  else if(vis.has(q)){out+=`<path d="M${P(q.x)} ${P(q.y)} Q${P(q.mx)} ${P(q.my)} ${P(q.ex)} ${P(q.ey)}" stroke="${col}" stroke-width="${P(Math.max(.8,q.w))}" fill="none" stroke-linecap="round"/>`;
+   if(q.d===3&&n>=18)out+=`<circle cx="${P(q.ex)}" cy="${P(q.ey)}" r="1.4" fill="${col}"/>`;}});
+ // axon to the right: hint at 0, extends; myelin from n>=8; terminals at n>=20
+ const ax0=C[0]+22,axL=16+f*46,ax1=ax0+axL;let axon=`<path d="M${ax0} ${C[1]} C${ax0+axL*.4} ${C[1]+6} ${ax0+axL*.7} ${C[1]-6} ${P(ax1)} ${C[1]+4}" stroke="${col}" stroke-width="2.4" fill="none" stroke-linecap="round" ${n?'':'stroke-dasharray="3 3"'}/>`;
+ if(n>=8){const m=Math.min(4,Math.floor((n-4)/4));for(let i=0;i<m;i++){const x=ax0+6+i*12;axon+=`<rect x="${x}" y="${C[1]-3.5}" width="9" height="7" rx="3.5" fill="rgba(231,236,239,${(op*.55).toFixed(2)})"/>`;}}
+ if(n>=20){[-.6,0,.6].forEach(a=>{const ex=ax1+Math.cos(a)*12,ey=C[1]+4+Math.sin(a)*12;axon+=`<path d="M${P(ax1)} ${C[1]+4} L${P(ex)} ${P(ey)}" stroke="${col}" stroke-width="1.4"/><circle cx="${P(ex)}" cy="${P(ey)}" r="2.6" fill="${col}"/>`;});}
+ const soma=`<path d="M${C[0]-22} ${C[1]} C${C[0]-24} ${C[1]-18} ${C[0]-6} ${C[1]-26} ${C[0]+8} ${C[1]-20} C${C[0]+22} ${C[1]-14} ${C[0]+26} ${C[1]+2} ${C[0]+20} ${C[1]+14} C${C[0]+12} ${C[1]+26} ${C[0]-8} ${C[1]+24} ${C[0]-16} ${C[1]+14} C${C[0]-21} ${C[1]+9} ${C[0]-21} ${C[1]+4} ${C[0]-22} ${C[1]}Z" fill="rgba(110,184,176,${(.14+.36*f).toFixed(2)})" stroke="${col}" stroke-width="2"/>`;
+ const nuc=`<circle cx="${C[0]-1}" cy="${C[1]-1}" r="8" fill="rgba(231,236,239,${(.35+.55*f).toFixed(2)})"/><circle cx="${C[0]+1}" cy="${C[1]-3}" r="2.6" fill="rgba(36,49,58,${(.5+.4*f).toFixed(2)})"/>`;
+ return `<svg viewBox="0 0 200 200" class="dendrite" role="img" aria-label="Neuron: ${n} of 24 standards mastered"><defs><radialGradient id="glow" cx="50%" cy="48%" r="50%"><stop offset="0%" stop-color="#6eb8b0" stop-opacity="${(.08+f*.3).toFixed(2)}"/><stop offset="75%" stop-color="#6eb8b0" stop-opacity="0"/></radialGradient></defs><circle cx="100" cy="96" r="92" fill="url(#glow)"/>${out}${axon}${soma}${nuc}</svg>`;}
 const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 function weight(q,now){const l=S.qLast[q.id];let w=q.kind==='scenario'?1.4:1;if(!l)return w;if(!l.ok)w+=2.4;if(now-l.t<36e5)w*=.15;return w;}
 function pick(pool,n,used){const out=[];let c=pool.filter(q=>!used.has(q.id));const now=Date.now();

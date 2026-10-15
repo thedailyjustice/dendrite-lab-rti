@@ -22,3 +22,5 @@ code{background:#0f171c;padding:2px 6px;border-radius:6px;font-size:13px;word-br
 .pbar{height:6px;background:#24313a;border-radius:99px;overflow:hidden;margin:6px 0 10px}.pbar i{display:block;height:100%;background:#2bb673;transition:width .3s}
 .shake{animation:shake .28s ease-in-out}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 @media (max-width:640px){.hero{grid-template-columns:1fr}nav a{margin-left:8px}}
+
+.dendrite{max-width:100%}@media(max-width:640px){.dendrite{width:150px;height:150px}}
