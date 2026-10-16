@@ -112,6 +112,6 @@ function placement(){app.innerHTML=`<h1>Placement check</h1><div class="card"><p
 function labsPage(){app.innerHTML=`<h1>Hands-on stations</h1><p class="muted">Each station takes about 6–8 minutes. Finish one for +25 points.</p><div class="labgrid">${Labs.LABS.map(l=>`<a class="labtile card ${S.labsCleared.includes(l.id)?'done':''}" href="#/lab/${l.id}"><b>${esc(l.title)}</b> ${S.labsCleared.includes(l.id)?'✓':''}<br><span class="muted">${l.standard} · ${esc(l.blurb)}</span></a>`).join('')}</div>`;}
 function route(){const{path,params}=parse();window.scrollTo(0,0);if(quiz.cleanup)quiz.cleanup();Labs.stop();
   if(path.startsWith('/lab/')){Labs.render(app,path.slice(5),{sound,clear:clearLab});return;}if(path==='/labs'){labsPage();return;}
-  if(path==='/practice')practice(params);else if(path==='/placement')placement();else if(path==='/progress')progress();else if(path==='/links')links();else home();}
+  if(path==='/practice')practice(params);else if(path==='/placement')placement();else if(path==='/progress')progress();else if(path==='/teacher-dur')links();else home();}
 window.addEventListener('hashchange',route);route();
 })();
