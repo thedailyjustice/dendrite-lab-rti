@@ -4,9 +4,9 @@ const STD=Object.fromEntries(D.standards.map(s=>[s.id,s])),IDS=D.standards.map(s
 const BY={};D.items.forEach(i=>(BY[i.standard]=BY[i.standard]||[]).push(i));
 const $=s=>document.querySelector(s),app=$('#app');
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function fresh(){return{v:1,name:'',points:0,streak:0,lastPlayDate:null,settings:{sound:true,sprint:false},labsCleared:[],history:[],stats:Object.fromEntries(IDS.map(id=>[id,M.blank()])),qLast:{},placementDone:null};}
+function fresh(){return{v:1,points:0,streak:0,lastPlayDate:null,settings:{sound:true,sprint:false},labsCleared:[],history:[],stats:Object.fromEntries(IDS.map(id=>[id,M.blank()])),qLast:{},placementDone:null};}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.v===1){const f=fresh();IDS.forEach(id=>{if(!s.stats[id])s.stats[id]=M.blank();});return Object.assign(f,s,{settings:Object.assign(f.settings,s.settings||{})});}}catch(e){}return fresh();}
-let S=load();const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}};
+let S=load();delete S.name;const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}};
 let AC=null;function tone(f,d,type,g=.05){try{if(!S.settings.sound)return;AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();const o=AC.createOscillator(),k=AC.createGain();o.type=type;o.frequency.value=f;k.gain.setValueAtTime(g,AC.currentTime);k.gain.exponentialRampToValueAtTime(1e-4,AC.currentTime+d);o.connect(k);k.connect(AC.destination);o.start();o.stop(AC.currentTime+d);}catch(e){}}
 const sound=k=>{if(k==='ok'){tone(523,.08,'triangle',.04);setTimeout(()=>tone(784,.14,'triangle',.05),70);}else if(k==='bad')tone(196,.18,'sine',.05);else if(k==='win')[523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,.16,'triangle',.045),i*90));};
 const today=()=>new Date().toLocaleDateString('en-CA');
@@ -51,7 +51,7 @@ function tag(id){const[c,t]=M.label(S.stats[id],Date.now());return`<span class="
 function bar(id){const a=M.acc(S.stats[id]);return`<span class="bar" title="recent accuracy"><i style="width:${a===null?0:Math.round(a*100)}%"></i></span>`;}
 function home(){const list=M.rtiList(S.stats,IDS,Date.now()),top=list.slice(0,6);
   const last=S.history[0];
-  app.innerHTML=`<div class="hero"><div><h1>Hi${S.name?', '+esc(S.name):''}! Ten minutes, then you're done.</h1>
+  app.innerHTML=`<div class="hero"><div><h1>Hi! Ten minutes, then you're done.</h1>
   <p class="muted">Practice your RTI list, or try a station you can actually mess with. Get to 80% on 2 different days and a standard grows a new branch.</p>
   <label class="muted"><input type="checkbox" id="sprint" ${S.settings.sprint?'checked':''}> Optional speed bonus on quizzes</label> · <label class="muted"><input type="checkbox" id="snd" ${S.settings.sound?'checked':''}> Sound</label></div>
   <div class="statbox">${dendrite(mastered())}<div class="stats3"><span><b>${S.points}</b>Points</span><span><b>${mastered()}<small>/24</small></b>Mastered</span><span><b>${S.streak}</b>Day streak</span><span><b>${last?last.correct+'/'+last.total:'—'}</b>Last run</span></div></div></div>
@@ -61,11 +61,9 @@ function home(){const list=M.rtiList(S.stats,IDS,Date.now()),top=list.slice(0,6)
   ${list.length?`<a class="btn" href="#/practice?std=${top.slice(0,3).join(',')}">Practice my top 3 (10 questions)</a>`:''}</div>
   <div class="card"><h2 style="margin-top:0">Hands-on stations</h2><p class="muted">${S.labsCleared.length}/${Labs.LABS.length} done</p><div class="labgrid">${Labs.LABS.map(l=>`<a class="labtile ${S.labsCleared.includes(l.id)?'done':''}" href="#/lab/${l.id}"><b>${esc(l.title)}</b><span class="muted">${l.standard}</span></a>`).join('')}</div></div>
   <div class="card"><h2 style="margin-top:0">Labs</h2>${D.worlds.map(w=>`<div class="row"><span><b>${esc(w.title)}</b> <span class="muted">${esc(w.blurb)}</span></span><a class="btn alt" href="#/practice?std=${w.standards.join(',')}">Practice</a></div>`).join('')}</div>
-  <div class="card"><label class="muted" for="nm">Your first name or nickname (stays on this Chromebook only)</label><input id="nm" type="text" maxlength="24" value="${esc(S.name)}">
-  <p><button class="btn alt" id="reset">Reset all progress</button></p></div>`;
+  <div class="card"><p><button class="btn alt" id="reset">Reset all progress</button></p></div>`;
   $('#sprint').onchange=e=>{S.settings.sprint=e.target.checked;save();};$('#snd').onchange=e=>{S.settings.sound=e.target.checked;save();};
-  $('#nm').onchange=e=>{S.name=e.target.value.trim().slice(0,24);save();};
-  $('#reset').onclick=()=>{if(confirm('Erase all progress and your name on this device?')){S=fresh();save();home();}};}
+  $('#reset').onclick=()=>{if(confirm('Erase all progress on this device?')){S=fresh();save();home();}};}
 function progress(){const now=Date.now();app.innerHTML=`<h1>My progress</h1><p class="muted">Mastered = at least 80% on your recent questions, on 2 different days, including a scenario question. Then you get review checks after 1, 3, and 7 days. A miss on a mastered standard sends it back to practice.</p>
   <div class="card">${IDS.map(id=>{const s=S.stats[id],need=s.status==='mastered'?(s.nextReview?`Next review ${new Date(s.nextReview).toLocaleDateString()}`:'All review checks passed'):M.why(s).join(' · ');
    return`<div class="row"><span><b>${id}</b> ${esc(STD[id].title)}<br><span class="muted">${esc(need)}</span></span><span style="display:flex;gap:8px;align-items:center">${bar(id)}${tag(id)}<a class="btn alt" href="#/practice?std=${id}">Go</a></span></div>`;}).join('')}</div>`;}
