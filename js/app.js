@@ -83,9 +83,9 @@ function quiz(qs,mode,onDone){let i=0,right=0,combo=0,pts=0;const res=[];const s
    app.innerHTML=`<div id="qwrap"><p class="muted">${mode} · ${i+1} / ${qs.length}${combo>=2?` · combo ${combo}`:''}${sprint?` · <span id="clock">⏱ 40s</span>`:''}</p>
    <div class="pbar"><i style="width:${i/qs.length*100}%"></i></div>
    <div class="card"><p class="muted"><span class="tag t-new">${q.standard}</span> ${esc(STD[q.standard].title)}${q.kind==='scenario'?' · <span class="tag t-review">Scenario</span>':''}</p><p style="font-size:18px">${esc(q.prompt)}</p>${ch.map((c,k)=>`<button class="choice" data-k="${k}">${'ABCD'[k]}. ${esc(c.t)}</button>`).join('')}
-   <p class="muted" id="hintrow"><button class="btn alt" id="hint">50/50 hint</button> Keys 1–4 or A–D</p><div id="fb"></div></div></div>`;
+   <p class="muted" id="hintrow">${mode==='Placement'?'':'<button class="btn alt" id="hint">50/50 hint</button> '}Keys 1–4 or A–D</p><div id="fb"></div></div></div>`;
    if(sprint)timer=setInterval(()=>{left=Math.max(0,left-1);const c=$('#clock');if(c)c.textContent=`⏱ ${left}s`;},1000);
-   $('#hint').onclick=()=>{if(answered||hinted)return;hinted=true;const wrong=[...app.querySelectorAll('.choice')].filter((x,k)=>!ch[k].ok);shuffle(wrong).slice(0,2).forEach(x=>{x.disabled=true;x.style.opacity=.25;});$('#hint').disabled=true;};
+   if($('#hint'))$('#hint').onclick=()=>{if(answered||hinted)return;hinted=true;const wrong=[...app.querySelectorAll('.choice')].filter((x,k)=>!ch[k].ok);shuffle(wrong).slice(0,2).forEach(x=>{x.disabled=true;x.style.opacity=.25;});$('#hint').disabled=true;};
    const pickK=k=>{if(answered)return;const b=app.querySelector(`.choice[data-k="${k}"]`);if(!b||b.disabled)return;answered=true;clearInterval(timer);const c=ch[k];
     app.querySelectorAll('.choice').forEach((x,j)=>{x.disabled=true;if(ch[j].ok)x.classList.add('ok');});if(!c.ok)b.classList.add('bad');$('#hintrow').style.display='none';
     const now=Date.now();S.qLast[q.id]={t:now,ok:c.ok};let ev='ok';if(mode!=='Placement'){ev=M.record(S.stats[q.standard],c.ok,q.kind==='scenario',now);}else{S.stats[q.standard].attempts.push({t:now,ok:c.ok,sc:q.kind==='scenario'});}
