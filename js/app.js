@@ -89,7 +89,7 @@ function quiz(qs,mode,onDone){let i=0,right=0,combo=0,pts=0;const res=[];const s
    const pickK=k=>{if(answered)return;const b=app.querySelector(`.choice[data-k="${k}"]`);if(!b||b.disabled)return;answered=true;clearInterval(timer);const c=ch[k];
     app.querySelectorAll('.choice').forEach((x,j)=>{x.disabled=true;if(ch[j].ok)x.classList.add('ok');});if(!c.ok)b.classList.add('bad');$('#hintrow').style.display='none';
     const now=Date.now();S.qLast[q.id]={t:now,ok:c.ok};let ev='ok';if(mode!=='Placement'){ev=M.record(S.stats[q.standard],c.ok,q.kind==='scenario',now,hinted);}
-    let gain=0;if(c.ok){right++;combo++;gain=10+(sprint&&left>15?2:0)+(combo>=3?2:0);pts+=gain;sound('ok');}else{combo=0;sound('bad');const w=$('#qwrap');w.classList.add('shake');setTimeout(()=>w.classList.remove('shake'),300);}
+    let gain=0;if(c.ok){right++;combo++;gain=hinted&&mode!=='Placement'?5:10+(sprint&&left>15?2:0)+(combo>=3?2:0);pts+=gain;sound('ok');}else{combo=0;sound('bad');const w=$('#qwrap');w.classList.add('shake');setTimeout(()=>w.classList.remove('shake'),300);}
     res.push({q,ok:c.ok,ev});save();
     const msg=ev==='mastered'?'<p>🌟 <b>You mastered '+q.standard+'!</b> A new branch grows. Review check in 1 day.</p>':ev==='reverted'?'<p>↩️ '+q.standard+' goes back to practice. You\'ll get it back!</p>':ev==='review-passed'?'<p>✅ Review check passed.</p>':'';
     if(ev==='mastered')sound('win');

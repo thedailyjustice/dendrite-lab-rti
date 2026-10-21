@@ -8,11 +8,11 @@ const credit=a=>a.ok?(a.h?HINT_CREDIT:1):0; // a right answer picked after the 5
 function acc(s){const r=recent(s);return r.length?r.reduce((t,a)=>t+credit(a),0)/r.length:null;}
 function meetsMastery(s){const r=recent(s);if(r.length<MIN_ATTEMPTS)return false;
   const a=acc(s);const days=new Set(r.map(x=>dayKey(x.t)));
-  const sc=r.some(x=>x.sc&&x.ok);return a>=TARGET&&days.size>=2&&sc;}
+  const sc=r.some(x=>x.sc&&x.ok&&!x.h);return a>=TARGET&&days.size>=2&&sc;}
 function why(s){const r=recent(s),need=[];if(r.length<MIN_ATTEMPTS)need.push(`answer ${MIN_ATTEMPTS-r.length} more`);
   const a=acc(s);if(a!==null&&a<TARGET)need.push('reach 80% on recent questions');
   if(new Set(r.map(x=>dayKey(x.t))).size<2)need.push('practice on a second day');
-  if(!r.some(x=>x.sc&&x.ok))need.push('get a scenario question right');return need;}
+  if(!r.some(x=>x.sc&&x.ok&&!x.h))need.push('get a scenario question right');return need;}
 function isDue(s,now){return s.status==='mastered'&&s.nextReview&&now>=s.nextReview;}
 function record(s,ok,sc,now,hinted){
   const wasDue=isDue(s,now);const at={t:now,ok,sc:!!sc};if(hinted)at.h=1;s.attempts.push(at);if(s.attempts.length>40)s.attempts=s.attempts.slice(-40);
