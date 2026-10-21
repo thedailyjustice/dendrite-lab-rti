@@ -93,7 +93,7 @@ function quiz(qs,mode,onDone){let i=0,right=0,combo=0,pts=0;const res=[];const s
     res.push({q,ok:c.ok,ev});save();
     const msg=ev==='mastered'?'<p>🌟 <b>You mastered '+q.standard+'!</b> A new branch grows. Review check in 1 day.</p>':ev==='reverted'?'<p>↩️ '+q.standard+' goes back to practice. You\'ll get it back!</p>':ev==='review-passed'?'<p>✅ Review check passed.</p>':'';
     if(ev==='mastered')sound('win');
-    $('#fb').innerHTML=`<div class="why"><b>${c.ok?'Yes. +'+gain:'Not that one.'}</b> ${esc(q.why||'')}</div>${msg}<button class="btn" id="next">${i+1<qs.length?'Next':'Finish'}</button>`;
+    $('#fb').innerHTML=`<div class="why"><b>${c.ok?(hinted&&mode!=='Placement'?'Correct! Hinted answers count as half credit. +':'Yes. +')+gain:'Not that one.'}</b> ${esc(q.why||'')}</div>${msg}<button class="btn" id="next">${i+1<qs.length?'Next':'Finish'}</button>`;
     $('#next').onclick=()=>{i++;show();};$('#next').focus();};
    app.querySelectorAll('.choice').forEach(b=>b.onclick=()=>pickK(+b.dataset.k));
    keyH=e=>{const m={'1':0,'2':1,'3':2,'4':3,a:0,b:1,c:2,d:3}[e.key.toLowerCase()];if(m!==undefined&&!answered)pickK(m);else if(e.key==='Enter'&&answered&&$('#next'))$('#next').click();};document.addEventListener('keydown',keyH);}
