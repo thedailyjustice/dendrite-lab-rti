@@ -37,3 +37,4 @@ input[type=checkbox]{width:22px;height:22px}
 .dlg{background:#141d23;border:1px solid #2c3b45;border-radius:12px;padding:16px;max-width:360px;width:100%}
 .dlg-row{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
 .btn.danger{background:#e0605a;color:#1a0605}
+.ctl .btn[data-act]{min-width:44px}

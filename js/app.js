@@ -6,7 +6,7 @@ const $=s=>document.querySelector(s),app=$('#app');
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function fresh(){return{v:1,points:0,streak:0,lastPlayDate:null,settings:{sound:true,sprint:false},labsCleared:[],history:[],stats:Object.fromEntries(IDS.map(id=>[id,M.blank()])),qLast:{},placementDone:null};}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.v===1){const f=fresh();IDS.forEach(id=>{if(!s.stats[id])s.stats[id]=M.blank();});return Object.assign(f,s,{settings:Object.assign(f.settings,s.settings||{})});}}catch(e){}return fresh();}
-let S=load();delete S.name;const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}};
+let S=load();const hadName='name' in S;delete S.name;const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}};if(hadName)save();
 let AC=null;function tone(f,d,type,g=.05){try{if(!S.settings.sound)return;AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();const o=AC.createOscillator(),k=AC.createGain();o.type=type;o.frequency.value=f;k.gain.setValueAtTime(g,AC.currentTime);k.gain.exponentialRampToValueAtTime(1e-4,AC.currentTime+d);o.connect(k);k.connect(AC.destination);o.start();o.stop(AC.currentTime+d);}catch(e){}}
 const sound=k=>{if(k==='ok'){tone(523,.08,'triangle',.04);setTimeout(()=>tone(784,.14,'triangle',.05),70);}else if(k==='bad')tone(196,.18,'sine',.05);else if(k==='win')[523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,.16,'triangle',.045),i*90));};
 const today=()=>new Date().toLocaleDateString('en-CA');
