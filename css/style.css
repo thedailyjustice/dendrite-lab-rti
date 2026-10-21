@@ -24,3 +24,16 @@ code{background:#0f171c;padding:2px 6px;border-radius:6px;font-size:13px;word-br
 @media (max-width:640px){.hero{grid-template-columns:1fr}nav a{margin-left:8px}}
 
 .dendrite{max-width:100%}@media(max-width:640px){.dendrite{width:150px;height:150px}}
+
+/* Recess Oct 19 + 8dac2a1: targets, phone text, key hint, reset dialog */
+.btn{min-height:44px;box-sizing:border-box}
+nav a{display:inline-block;padding:12px 8px;min-height:44px;box-sizing:border-box}
+label:has(input[type=checkbox]){display:inline-flex;align-items:center;gap:8px;min-height:44px}
+input[type=checkbox]{width:22px;height:22px}
+@media (hover:none) and (pointer:coarse){.keyhint{display:none}}
+.brand{display:inline-flex;align-items:center;min-height:44px}
+@media (max-width:640px){nav a,.btn,.muted,.tag,.stats3 span,.ctl span,code,input[type=text]{font-size:16px}}
+.dlg-back{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:50;padding:16px}
+.dlg{background:#141d23;border:1px solid #2c3b45;border-radius:12px;padding:16px;max-width:360px;width:100%}
+.dlg-row{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.btn.danger{background:#e0605a;color:#1a0605}
