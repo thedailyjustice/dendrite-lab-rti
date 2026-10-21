@@ -38,3 +38,4 @@ input[type=checkbox]{width:22px;height:22px}
 .dlg-row{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
 .btn.danger{background:#e0605a;color:#1a0605}
 .ctl .btn[data-act]{min-width:44px}
+@media (max-width:640px){.stats,.stats3 span,.stats3 small{font-size:16px}}
